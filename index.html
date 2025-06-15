@@ -1,101 +1,31 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>视频播放器</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
-            color: #fff;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            max-width: 900px;
-            width: 100%;
-            margin: 40px auto;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        .video-container {
-            position: relative;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-        }
-        .video-container video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-        .video-info {
-            padding: 20px;
-        }
-        .video-title {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #4fc3f7;
-        }
-        .video-description {
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #e0e0e0;
-        }
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            padding: 15px 0;
-        }
-        .btn {
-            padding: 10px 20px;
-            background: #2196f3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        .btn:hover {
-            background: #1976d2;
-            transform: translateY(-2px);
-        }
-        footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 14px;
-            color: #b0bec5;
-        }
-        @media (max-width: 768px) {
-            .container {
-                margin: 20px auto;
-            }
-            .video-title {
-                font-size: 20px;
-            }
-            .controls {
-                flex-wrap: wrap;
-            }
-        }
-    </style>
+    <meta charset="utf-8">
+    <title>直播播放器</title>
+    <!-- 引入hls.js库 -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="video-container">
-            <video controls id="mainVideo">
-                <source src="https://hcyykj-eos-hhht5-01.eos.huhehaote-8.cmecloud.cn/03be6be6b5a0426fb4f8c58a5c97b95c086?response-content-disposition=attachment%3B%20filename%2A%3DUTF-8%27%272025-06-11%252007-07-20.mp4&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250615T192653Z&X-Amz-SignedHeaders=host&X-Amz-Expires=900&X-Amz-Credential=JX8QMYUJCVXX3YB0PN5Y%2F20250615%2Fdefault%2Fs3%2Faws4_request&t=2&u=1039896639894916276&ot=personal&oi=1039896639894916276&f=FhDCQdNUKCYvOqlvmQwhDkZGdrh9OCh0L&X-Amz-Signature=001c2c8f885cf974febb420f9efac05f708771c06e091bff9d76d46dbd65ce38" type="video/mp4">
-                您的
+    <video id="liveVideo" controls width="100%" height="auto"></video>
+
+    <script>
+        // 检测浏览器是否原生支持HLS
+        const video = document.getElementById('liveVideo');
+        const videoUrl = "https://d1--cn-gotcha209.bilivideo.com/live-bvc/181871/live_474595627_50840492_prohevc/index.m3u8?expires=1750034057&len=0&oi=3746928731&pt=web&qn=10000&trid=10075f7d73d94b1ae1660f6b503c43684f58&sigparams=cdn,expires,len,oi,pt,qn,trid&cdn=cn-gotcha209&sign=16ba71ae7e5a99b384b0bf4c993fcb60&site=c14afb414a5e316180766251a10f9061&free_type=0&mid=62351558&sche=ban&bvchls=1&trace=64&isp=cm&rg=SouthWest&pv=Sichuan&deploy_env=prod&source=puv3_onetier&p2p_type=1&suffix=prohevc&pp=rtmp&info_source=hot_cache&origin_bitrate=1254981&score=77&hdr_type=0&sk=e81613d2b0d942b4fcf5b2713c281f32&codec=1&sl=5&hot_cdn=909773&flvsk=1d25f4da1575fcb927b5b789251233f8&vd=bc&src=puv3&order=1";
+
+        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // 苹果设备原生支持
+            video.src = videoUrl;
+        } else if (Hls.isSupported()) {
+            // 其他浏览器使用hls.js
+            const hls = new Hls();
+            hls.loadSource(videoUrl);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+        } else {
+            alert("您的浏览器不支持直播播放");
+        }
+    </script>
+</body>
+</html>
